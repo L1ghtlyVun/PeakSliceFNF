@@ -26,7 +26,7 @@ class Save
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
   // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
-  static final SAVE_PATH:String = 'FunkinCrew';
+  static final SAVE_PATH:String = 'PeakSlice';
   static final SAVE_NAME:String = 'Funkin';
 
   static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
@@ -118,7 +118,9 @@ class Save
           // Reasonable defaults.
           framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
+          shaders: true,
           downscroll: false,
+          middlescroll: false,
           flashingLights: true,
           zoomCamera: true,
           debugDisplay: false,
@@ -160,7 +162,7 @@ class Save
           // Reasonable defaults.
           screenTimeout: false,
           controlsScheme: FunkinHitboxControlSchemes.Arrows,
-          noAds: false
+          noAds: true
         },
       #end
 
@@ -168,7 +170,7 @@ class Save
         {
           // No mods enabled.
           enabledMods: [],
-          modOptions: [],
+          modOptions: new Map<String, Dynamic>(),
         },
 
       unlocks:
@@ -1129,6 +1131,9 @@ class Save
    */
   public function flush():Void
   {
+    trace('[SAVE] flush() called. Saving enabled mods: ' + data.mods.enabledMods);
+    FlxG.save.bind(Save.SAVE_NAME + Save.BASE_SAVE_SLOT, Save.SAVE_PATH);
+    FlxG.save.data.mySave = this.data;
     FlxG.save.flush();
   }
 
@@ -1170,9 +1175,9 @@ class Save
         return handleSaveDataError(slot);
       case BOUND(_, _):
         trace('[SAVE] Loaded existing save data in slot ${slot}.');
-        var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
+        var loadedData = FlxG.save.data.mySave;
+        var gameSave = SaveDataMigrator.migrate(loadedData);
         FlxG.save.mergeData(gameSave.data, true);
-
         return gameSave;
     }
   }
@@ -1525,11 +1530,15 @@ typedef SaveDataOptions =
    */
   var naughtyness:Bool;
 
+  var shaders:Bool;
+
   /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.
    * @default `false`
    */
   var downscroll:Bool;
+
+  var middlescroll:Bool;
 
   /**
    * If disabled, flashing lights in the main menu and other areas will be less intense.

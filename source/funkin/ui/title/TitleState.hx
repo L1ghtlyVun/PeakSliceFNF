@@ -23,6 +23,7 @@ import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.title.FermerState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
 import openfl.media.Video;
@@ -53,6 +54,11 @@ class TitleState extends MusicBeatState
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
+  
+  // переменные
+var swipeSequence:Array<Int> = [];
+var targetSequence:Array<Int> = [4096, 4096, 1, 16]; // вниз вниз влево вправо
+var sequenceActive:Bool = false;
 
   override public function create():Void
   {
@@ -61,6 +67,7 @@ class TitleState extends MusicBeatState
 
     curWacky = FlxG.random.getObject(getIntroTextShit());
     funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+funkin.FunkinMemory.cacheSound(Paths.sound('secretSound')); 
 
     // DEBUG BULLSHIT
 
@@ -328,6 +335,18 @@ class TitleState extends MusicBeatState
     if (controls.UI_LEFT #if mobile || SwipeUtil.justSwipedLeft #end) swagShader.update(-elapsed * 0.1);
     if (controls.UI_RIGHT #if mobile || SwipeUtil.justSwipedRight #end) swagShader.update(elapsed * 0.1);
     if (!cheatActive && skippedIntro) cheatCodeShit();
+    
+    // записывание слайдев 
+    #if mobile
+if (!sequenceActive && skippedIntro && !cheatActive && !transitioning)
+{
+if (SwipeUtil.justSwipedDown) recordSwipe(256);
+if (SwipeUtil.justSwipedUp) recordSwipe(4096);
+if (SwipeUtil.justSwipedLeft) recordSwipe(1);
+if (SwipeUtil.justSwipedRight) recordSwipe(16);
+}
+#end
+    
     super.update(elapsed);
   }
 
@@ -379,6 +398,41 @@ class TitleState extends MusicBeatState
     FlxG.camera.flash(FlxColor.WHITE, 1);
     FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
   }
+  
+
+function recordSwipe(swipe:Int):Void
+  {
+      swipeSequence.push(swipe);
+      if (swipeSequence.length > 4)
+          swipeSequence.shift();
+      
+      trace('Swipe recorded: ' + swipe);
+      
+      if (swipeSequence.length == 4)
+      {
+          var match = true;
+          for (i in 0...4)
+          {
+              if (swipeSequence[i] != targetSequence[i])
+              {
+                  match = false;
+                  break;
+              }
+          }
+          
+          if (match)
+          {
+              activateSpecialSequence();
+          }
+      }
+  }
+  
+function activateSpecialSequence():Void
+{
+    sequenceActive = true;
+    trace('Secret sequence activated!');
+    FlxG.switchState(new FermerState());
+}
 
   function createCoolText(textArray:Array<String>)
   {

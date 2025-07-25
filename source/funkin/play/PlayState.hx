@@ -1447,8 +1447,6 @@ class PlayState extends MusicBeatSubState
         }
       }
 
-      if (!vwooshTimer.finished) vwooshTimer.active = false;
-
       // Pause camera tweening, and keep track of which tweens we pause.
       if (cameraFollowTween != null && cameraFollowTween.active)
       {
@@ -2058,6 +2056,13 @@ class PlayState extends MusicBeatSubState
     {
       initNoteHitbox();
     }
+    else
+    {
+      if (Preferences.middlescroll)
+      {
+          initMobileNotes();
+      }
+    }
     #end
 
     playerStrumline.fadeInArrows();
@@ -2084,6 +2089,35 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
+    if (currentChart.noteStyle != "pixel")
+    {
+      #if android playerStrumline.y += 10; #end
+    }
+    else
+    {
+      playerStrumline.y -= 10;
+    }
+    opponentStrumline.y = Constants.STRUMLINE_Y_OFFSET * 0.3;
+    opponentStrumline.x -= 30;
+  }
+  #end
+
+  #if mobile
+  function initMobileNotes()
+  {
+    final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+    final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
+    final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.3) * amplification;
+
+    playerStrumline.strumlineScale.set(playerStrumlineScale, playerStrumlineScale);
+    playerStrumline.setNoteSpacing(playerNoteSpacing);
+    for (strum in playerStrumline)
+    {
+      strum.width *= 2;
+    }
+    opponentStrumline.enterMiniMode(0.4 * amplification);
+
+    playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     if (currentChart.noteStyle != "pixel")
     {
       #if android playerStrumline.y += 10; #end

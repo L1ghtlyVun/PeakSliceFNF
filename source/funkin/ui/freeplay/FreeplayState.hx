@@ -938,7 +938,6 @@ class FreeplayState extends MusicBeatSubState
 
     FlxG.console.registerFunction('changeSelection', changeSelection);
 
-    rememberSelection();
     changeSelection();
     refreshCapsuleDisplays();
   }

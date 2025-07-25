@@ -6,6 +6,7 @@ import funkin.ui.TextMenuList;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.math.FlxPoint;
 import funkin.ui.TextMenuList;
+import funkin.modding.PolymodHandler;
 import funkin.ui.TextMenuList.TextMenuItem;
 import flixel.FlxSprite;
 import flixel.FlxObject;
@@ -165,6 +166,7 @@ class OptionsMenu extends Page<OptionsMenuPageName>
     add(items = new TextMenuList());
 
     createItem("PREFERENCES", function() codex.switchPage(Preferences));
+    createItem("MOD MANAGER", function() FlxG.switchState(new ModMenuState()));
     #if mobile
     if (ControlsHandler.hasExternalInputDevice)
     #end

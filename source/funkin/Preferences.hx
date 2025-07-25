@@ -50,6 +50,20 @@ class Preferences
     #end
   }
 
+  public static var shaders(get, set):Bool;
+  static function get_shaders():Bool
+  {
+    return Save?.instance?.options?.shaders ?? true;
+  }
+
+  static function set_shaders(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.shaders = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * Whether some particularly foul language is displayed.
    * @default `true`
@@ -92,6 +106,21 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.downscroll = value;
+    save.flush();
+    return value;
+  }
+
+  public static var middlescroll(get, set):Bool;
+
+  static function get_middlescroll():Bool
+  {
+    return Save?.instance?.options?.middlescroll #if mobile ?? true #else ?? false #end;
+  }
+
+  static function set_middlescroll(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.middlescroll = value;
     save.flush();
     return value;
   }

@@ -35,17 +35,17 @@ class Project extends HXProject
    * The build's number and version code.
    * Used when publishing the game to mobile app stores. Should increment with each patch.
    */
-  static final BUILD_NUMBER:Int = 2;
+  static final BUILD_NUMBER:Int = 4;
 
   /**
    * The game's name. Used as the default window title.
    */
-  static final TITLE:String = "Friday Night Funkin'";
+  static final TITLE:String = "PeakSlice";
 
   /**
    * A package name used for identifying the app on various app stores.
    */
-  static final PACKAGE_NAME:String = "me.funkin.fnf";
+  static final PACKAGE_NAME:String = "me.funkin_mobile.fnf";
 
   /**
    * The name of the generated executable file.

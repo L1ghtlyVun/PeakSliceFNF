@@ -108,21 +108,17 @@ class InAppPurchasesUtil
     IAPAndroid.startConnection();
     #else
     IAPIOS.onProductDetailsReceived.add(function(productDetails:Array<IAPProductDetails>):Void {
-      if (productDetails != null)
-      {
-        currentProductDetails = productDetails;
-      }
+      if (productDetails != null) currentProductDetails = productDetails;
+      hasInitialized = true;
     });
 
     IAPIOS.onProductDetailsFailed.add(function(error:IAPError):Void {
+      trace('Failed to request product details: "$error"');
       hasInitialized = false;
     });
 
     IAPIOS.onPurchasesUpdated.add(function(purchases:Array<IAPPurchase>):Void {
       handlePurchases(purchases);
-      trace("iOS purchases updated: " + purchases.length);
-      hasInitialized = true;
-      trace("hasInitialized: " + hasInitialized);
     });
 
     IAPIOS.init();

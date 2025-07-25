@@ -109,16 +109,37 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
    */
   function createPrefItems():Void
   {
+    createPrefItemEnum('Control Scheme', 'How do you want your controls to look.', [
+      "Arrows" => FunkinHitboxControlSchemes.Arrows,
+      "Four Lanes" => FunkinHitboxControlSchemes.FourLanes,
+      "D-Pad" => FunkinHitboxControlSchemes.DoubleThumbDPad,
+    ], function(key:String, value:FunkinHitboxControlSchemes):Void {
+      Preferences.controlsScheme = value;
+    }, switch (Preferences.controlsScheme)
+      {
+        case FunkinHitboxControlSchemes.Arrows: "Arrows";
+        case FunkinHitboxControlSchemes.FourLanes: "Four Lanes";
+        case FunkinHitboxControlSchemes.DoubleThumbDPad: "D-Pad";
+        default: "Arrows";
+      });
+    createPrefItemCheckbox('Shaders', 'If enabled, shaders in the game will be displayed. (VERY EXPERIMENTAL)', function(value:Bool):Void {
+      Preferences.shaders = value;
+    }, Preferences.shaders);
     #if FEATURE_NAUGHTYNESS
     createPrefItemCheckbox('Naughtyness', 'If enabled, raunchy content (such as swearing, etc.) will be displayed.', function(value:Bool):Void {
       Preferences.naughtyness = value;
     }, Preferences.naughtyness);
     #end
+    
     createPrefItemCheckbox('Downscroll', 'If enabled, this will make the notes move downwards.', function(value:Bool):Void {
       Preferences.downscroll = value;
     },
       Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
+
+    createPrefItemCheckbox('Middlescroll', 'If enabled, arrows will be displayed in the center of the screen, instead of being on the right (WORKS ONLY WITH FOUR LANES MODE)', function(value:Bool):Void {
+      Preferences.middlescroll = value;
+    }, Preferences.middlescroll);
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);

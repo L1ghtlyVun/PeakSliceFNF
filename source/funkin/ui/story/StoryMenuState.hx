@@ -156,7 +156,6 @@ class StoryMenuState extends MusicBeatState
 
     persistentUpdate = persistentDraw = true;
 
-    rememberSelection();
 
     updateData();
 
