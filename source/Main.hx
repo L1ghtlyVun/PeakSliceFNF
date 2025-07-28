@@ -25,12 +25,45 @@ import funkin.util.WindowUtil;
  */
 class Main extends Sprite
 {
+
   var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
   var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
   var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
   var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
   var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
   var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+
+  /**
+   * Static asset cache for loaded resources (atlases, textures, sounds, etc).
+   * Use this to avoid loading the same asset multiple times.
+   */
+  public static var assetCache:Map<String, Dynamic> = new Map<String, Dynamic>();
+
+  /**
+   * Get an asset from the cache, or null if not present.
+   */
+  public static function getCachedAsset(key:String):Dynamic {
+    return assetCache.exists(key) ? assetCache.get(key) : null;
+  }
+
+  /**
+   * Store an asset in the cache.
+   */
+  public static function setCachedAsset(key:String, asset:Dynamic):Void {
+    assetCache.set(key, asset);
+  }
+
+  /**
+   * Example usage: Load an atlas with caching.
+   * Replace this with your actual asset loading logic as needed.
+   */
+  public static function loadAtlasCached(key:String, loader:Void->Dynamic):Dynamic {
+    var cached = getCachedAsset(key);
+    if (cached != null) return cached;
+    var asset = loader();
+    setCachedAsset(key, asset);
+    return asset;
+  }
 
   // You can pretty much ignore everything from here on - your code should go in your states.
 

@@ -141,6 +141,8 @@ class MainMenuState extends MusicBeatState
       FlxG.switchState(new StoryMenuState());
     });
     createMenuItem('freeplay', 'mainmenu/freeplay', function() {
+      var tFreeplayStart = Sys.time();
+      trace('MainMenuState: Freeplay button pressed at ' + tFreeplayStart + 's');
       persistentDraw = true;
       persistentUpdate = false;
       if (menuItems != null) rememberedSelectedIndex = menuItems.selectedIndex;
@@ -159,18 +161,13 @@ class MainMenuState extends MusicBeatState
       var targetCharacter:Null<String> = rememberedFreeplayCharacter;
       #end
 
-      if (!hasUpgraded)
-      {
-        for (i in 0...upgradeSparkles.length)
-        {
-          upgradeSparkles.members[i].cancelSparkle();
-        }
-      }
 
+      trace('MainMenuState: About to open FreeplayState at ' + Sys.time() + 's');
       openSubState(new FreeplayState(
         {
           character: targetCharacter
         }));
+      trace('MainMenuState: FreeplayState opened at ' + Sys.time() + 's');
       canInteract = true;
     });
 

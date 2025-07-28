@@ -122,6 +122,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
         case FunkinHitboxControlSchemes.DoubleThumbDPad: "D-Pad";
         default: "Arrows";
       });
+    createPrefItemNumber('Hitbox Opacity', 'Multiplier of intensity for all the haptic feedback effects.', function(value:Float) {
+      Preferences.hitboxOpacity = value;
+    }, null, Preferences.hitboxOpacity, 0.1, 5, 0.1, 1);
     createPrefItemCheckbox('Shaders', 'If enabled, shaders in the game will be displayed. (VERY EXPERIMENTAL)', function(value:Bool):Void {
       Preferences.shaders = value;
     }, Preferences.shaders);
@@ -137,9 +140,11 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.downscroll, #if mobile ControlsHandler.hasExternalInputDevice
       || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
 
-    createPrefItemCheckbox('Middlescroll', 'If enabled, arrows will be displayed in the center of the screen, instead of being on the right (WORKS ONLY WITH FOUR LANES MODE)', function(value:Bool):Void {
+    createPrefItemCheckbox('Middlescroll', 'If enabled, this will make the lanes appear in the center of the screen.', function(value:Bool):Void {
       Preferences.middlescroll = value;
-    }, Preferences.middlescroll);
+    },
+      Preferences.middlescroll, #if mobile ControlsHandler.hasExternalInputDevice
+      || Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows #end);
     createPrefItemPercentage('Strumline Background', 'Give the strumline a semi-transparent background', function(value:Int):Void {
       Preferences.strumlineBackgroundOpacity = value;
     }, Preferences.strumlineBackgroundOpacity);

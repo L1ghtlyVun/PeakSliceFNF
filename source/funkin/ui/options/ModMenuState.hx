@@ -62,6 +62,13 @@ class ModMenuState extends FlxState {
 
     var checker:FlxBackdrop;
 
+var scrollOffset:Float = 0;
+var SCROLL_STEP:Float = 40; // Amount to scroll per wheel tick or key press
+#if mobile
+var lastTouchY:Float = 0;
+var isTouching:Bool = false;
+#end
+
     override public function create():Void {
         super.create();
 
@@ -115,11 +122,51 @@ class ModMenuState extends FlxState {
         checker.x += 0.45;
         checker.y += 0.16;
 
-        
+
+        // Mouse wheel scroll (desktop only)
+        #if !mobile
+        if (FlxG.mouse.wheel != 0) {
+            scrollOffset -= FlxG.mouse.wheel * SCROLL_STEP;
+        }
+        // Arrow key scroll (PageUp/PageDown for faster)
+        if (FlxG.keys.pressed.UP) {
+            scrollOffset += SCROLL_STEP * elapsed * 5;
+        }
+        if (FlxG.keys.pressed.DOWN) {
+            scrollOffset -= SCROLL_STEP * elapsed * 5;
+        }
+        if (FlxG.keys.justPressed.PAGEUP) {
+            scrollOffset += SCROLL_STEP * 5;
+        }
+        if (FlxG.keys.justPressed.PAGEDOWN) {
+            scrollOffset -= SCROLL_STEP * 5;
+        }
+        #end
+
+        #if mobile
+        var touch = FlxG.touches.getFirst();
+        if (touch != null) {
+            if (!isTouching) {
+                isTouching = true;
+                lastTouchY = touch.screenY;
+            } else {
+                var dy = touch.screenY - lastTouchY;
+                scrollOffset += dy;
+                lastTouchY = touch.screenY;
+            }
+        } else {
+            isTouching = false;
+        }
+        #end
+
+        var maxScroll:Float = Math.max(0, (grpMods.length * 50) - (FlxG.height - 250));
+        if (scrollOffset < -maxScroll) scrollOffset = -maxScroll;
+        if (scrollOffset > 0) scrollOffset = 0;
+
+
         if (FlxG.mouse.justPressed) {
             var currentTime = Sys.time();
             var tappedIndex = -1;
-            
             for (i in 0...grpMods.length) {
                 var item = grpMods.members[i];
                 if (FlxG.mouse.overlaps(item)) {
@@ -127,7 +174,6 @@ class ModMenuState extends FlxState {
                     break;
                 }
             }
-            
             if (tappedIndex >= 0) {
                 if (tappedIndex == lastTapIndex && (currentTime - lastTapTime) < DOUBLE_TAP_THRESHOLD) {
                     toggleModState(tappedIndex);
@@ -135,12 +181,11 @@ class ModMenuState extends FlxState {
                     curSelected = tappedIndex;
                     selections(0); // Just update selection visuals
                 }
-                
                 lastTapTime = currentTime;
                 lastTapIndex = tappedIndex;
             }
         }
-        
+
         if (FlxG.keys.justPressed.UP) {
             selections(-1);
         } else if (FlxG.keys.justPressed.DOWN) {
@@ -223,7 +268,7 @@ class ModMenuState extends FlxState {
 
     function organizeByY():Void {
         for (i in 0...grpMods.length) {
-            grpMods.members[i].y = 210 + (50 * i);
+            grpMods.members[i].y = 210 + (50 * i) + scrollOffset;
             grpMods.members[i].x = 40;
         }
     }

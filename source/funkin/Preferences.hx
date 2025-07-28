@@ -251,6 +251,21 @@ class Preferences
     return value;
   }
 
+  public static var hitboxOpacity(get, set):Float;
+
+  static function get_hitboxOpacity():Float
+  {
+    return Save?.instance?.options?.hitboxOpacity ?? 1;
+  }
+
+  static function set_hitboxOpacity(value:Float):Float
+  {
+    var save:Save = Save.instance;
+    save.options.hitboxOpacity = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * If enabled, the game will automatically pause when tabbing out.
    * Always enabled on mobile.

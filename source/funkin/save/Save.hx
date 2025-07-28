@@ -126,6 +126,7 @@ class Save
           debugDisplay: false,
           hapticsMode: 'All',
           hapticsIntensityMultiplier: 1,
+          hitboxOpacity: 1,
           autoPause: true,
           vsyncMode: 'Off',
           strumlineBackgroundOpacity: 0,
@@ -1569,6 +1570,8 @@ typedef SaveDataOptions =
    * @default `1`
    */
   var hapticsIntensityMultiplier:Float;
+
+  var hitboxOpacity:Float;
 
   /**
    * If enabled, the game will automatically pause when tabbing out.
