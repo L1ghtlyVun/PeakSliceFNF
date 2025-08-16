@@ -627,7 +627,7 @@ class PlayState extends MusicBeatSubState
    * The threshold for resyncing the song.
    * If the vocals deviate from the instrumental by more than this amount, then `resyncVocals()` will be called.
    */
-  static final RESYNC_THRESHOLD:Float = 40;
+  static final RESYNC_THRESHOLD:Float = 50;
 
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
@@ -762,6 +762,13 @@ class PlayState extends MusicBeatSubState
     }
     initStrumlines();
     initPopups();
+
+    if (currentStage != null && currentStage.getBoyfriend() != null)
+    {
+      FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
+    }
+    FlxG.watch.addQuick('health', health);
+    FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     #if mobile
     if (!ControlsHandler.usingExternalInputDevice)
@@ -1113,12 +1120,6 @@ class PlayState extends MusicBeatSubState
       camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
     }
 
-    if (currentStage != null && currentStage.getBoyfriend() != null)
-    {
-      FlxG.watch.addQuick('bfAnim', currentStage.getBoyfriend().getCurrentAnimation());
-    }
-    FlxG.watch.addQuick('health', health);
-    FlxG.watch.addQuick('cameraBopIntensity', cameraBopIntensity);
 
     // TODO: Add a song event for Handle GF dance speed.
 

@@ -20,6 +20,7 @@ import funkin.ui.MusicBeatState;
 import flixel.util.FlxTimer;
 import funkin.ui.AtlasMenuList.AtlasMenuItem;
 import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.freeplay.FreeplayLoadingState;
 import funkin.ui.MenuList.MenuTypedList;
 import funkin.ui.MenuList.MenuListItem;
 import funkin.ui.title.TitleState;
@@ -163,10 +164,9 @@ class MainMenuState extends MusicBeatState
 
 
       trace('MainMenuState: About to open FreeplayState at ' + Sys.time() + 's');
-      openSubState(new FreeplayState(
-        {
-          character: targetCharacter
-        }));
+      FlxG.switchState(new FreeplayLoadingState({
+    character: targetCharacter
+      }));
       trace('MainMenuState: FreeplayState opened at ' + Sys.time() + 's');
       canInteract = true;
     });

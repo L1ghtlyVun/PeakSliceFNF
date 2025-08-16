@@ -758,6 +758,18 @@ class FreeplayState extends MusicBeatSubState
       backingImage.visible = true;
       backingCard.introDone();
 
+      if (fromResultsParams != null) {
+        // Find the capsule matching our song ID
+        for (i in 0...grpCapsules.length) {
+            var capsule = grpCapsules.members[i];
+            if (capsule.freeplayData?.data.id == fromResultsParams.songId) {
+                curSelected = i;
+                changeSelection(0); // Updates UI without animation
+                break;
+            }
+        }
+      }
+
       if (prepForNewRank && fromResultsParams != null)
       {
         rankAnimStart(fromResultsParams, currentCapsule);
@@ -1782,11 +1794,26 @@ class FreeplayState extends MusicBeatSubState
         return;
       }
 
-      var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
-
-      // Seeing if I can do an animation...
+        if (params?.fromResults != null) {
+      // Coming from ResultsState - find the specific song
+      var targetSongId = params.fromResults.songId;
+      var targetDifficultyId = params.fromResults.difficultyId;
+      
+      // Find the capsule with matching song ID
+      for (i in 0...grpCapsules.length) {
+          var capsule = grpCapsules.members[i];
+          if (capsule.freeplayData?.data.id == targetSongId) {
+              curSelected = i;
+              changeSelection(0);
+              break;
+          }
+      }
+  } else {
+      // Normal random selection
+      var targetSong = FlxG.random.getObject(availableSongCapsules);
       curSelected = grpCapsules.members.indexOf(targetSong);
       changeSelection(0);
+  }
       targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
     }
     // Play the confirm animation so the user knows they actually did something.
@@ -2029,9 +2056,16 @@ class FreeplayState extends MusicBeatSubState
     }
     else
     {
-      // we aren't pressin nothin, we should lerp our difficulty thing back to og offset/position
+      try
+      {
       currentDifficultySprite.offset.x = MathUtil.smoothLerpPrecision(currentDifficultySprite.offset.x, 0, FlxG.elapsed, 0.4);
-    }
+      }
+      catch (e)
+      {
+        trace(currentDifficultySprite.offset.x);
+      }
+      }
+  
 
     diffSelRight.setPress(TouchUtil.overlaps(diffSelRight, funnyCam) && TouchUtil.justPressed);
     diffSelLeft.setPress(TouchUtil.overlaps(diffSelLeft, funnyCam) && TouchUtil.justPressed);
@@ -2385,8 +2419,8 @@ class FreeplayState extends MusicBeatSubState
   }
   #end
 
-  function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
-  {
+function capsuleOnConfirmRandom(randomCapsule:SongMenuItem):Void
+{
     trace('RANDOM SELECTED');
 
     controls.active = false;
@@ -2395,34 +2429,28 @@ class FreeplayState extends MusicBeatSubState
     #end
 
     var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
-      // Dead capsules are ones which were removed from the list when changing filters.
-      return cap.alive && cap.freeplayData != null;
+        return cap.alive && cap.freeplayData != null;
     });
 
     trace('Available songs: ${availableSongCapsules.map(function(cap) {
-      return cap?.freeplayData?.data.songName;
+        return cap?.freeplayData?.data.songName;
     })}');
 
     if (availableSongCapsules.length == 0)
     {
-      trace('No songs available!');
-      controls.active = true;
-      #if NO_FEATURE_TOUCH_CONTROLS
-      letterSort.inputEnabled = true;
-      #end
-      FunkinSound.playOnce(Paths.sound('cancelMenu'));
-      return;
+        trace('No songs available!');
+        controls.active = true;
+        #if NO_FEATURE_TOUCH_CONTROLS
+        letterSort.inputEnabled = true;
+        #end
+        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+        return;
     }
-
-    var targetSong:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
-
-    // Seeing if I can do an animation...
+    var targetSong = FlxG.random.getObject(availableSongCapsules);
     curSelected = grpCapsules.members.indexOf(targetSong);
-    changeSelection(0); // Trigger an update.
-
-    // Act like we hit Confirm on that song.
+    changeSelection(0);
     capsuleOnConfirmDefault(targetSong);
-  }
+}
 
   /**
    * Called when hitting ENTER to open the instrumental list.

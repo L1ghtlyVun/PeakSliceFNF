@@ -64,6 +64,20 @@ class Preferences
     return value;
   }
 
+  public static var polymod_errs(get, set):Bool;
+  static function get_polymod_errs():Bool
+  {
+    return Save?.instance?.options?.polymod_errs ?? true;
+  }
+
+  static function set_polymod_errs(value:Bool):Bool
+  {
+    var save:Save = Save.instance;
+    save.options.polymod_errs = value;
+    save.flush();
+    return value;
+  }
+
   /**
    * Whether some particularly foul language is displayed.
    * @default `true`

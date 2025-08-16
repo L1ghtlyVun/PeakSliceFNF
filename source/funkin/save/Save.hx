@@ -119,6 +119,7 @@ class Save
           framerate: #if mobile refreshRate #else 60 #end,
           naughtyness: true,
           shaders: true,
+          polymod_errs: false,
           downscroll: false,
           middlescroll: false,
           flashingLights: true,
@@ -1532,6 +1533,8 @@ typedef SaveDataOptions =
   var naughtyness:Bool;
 
   var shaders:Bool;
+
+  var polymod_errs:Bool;
 
   /**
    * If enabled, the strumline is at the bottom of the screen rather than the top.

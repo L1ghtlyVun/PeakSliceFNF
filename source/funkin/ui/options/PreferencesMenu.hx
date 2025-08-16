@@ -172,6 +172,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefItemCheckbox('Camera Zooms', 'If disabled, camera stops bouncing to the song.', function(value:Bool):Void {
       Preferences.zoomCamera = value;
     }, Preferences.zoomCamera);
+    createPrefItemCheckbox('Polymod Error Alerts', 'If enabled, Polymod will show those annoying alerts about errors in mods.', function(value:Bool):Void {
+      Preferences.polymod_errs = value;
+    }, Preferences.polymod_errs);
     #if !mobile
     createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
       Preferences.debugDisplay = value;

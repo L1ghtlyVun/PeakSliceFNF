@@ -37,12 +37,18 @@ class PolymodErrorHandler
         // A syntax error when parsing a script.
         logError(error.message);
         // Notify the user via popup.
-        showAlert('Polymod Script Parsing Error', error.message);
+        if (Preferences.polymod_errs)
+        {
+          showAlert('Polymod Script Parsing Error', error.message);
+        }
       case SCRIPT_RUNTIME_EXCEPTION:
         // A runtime error when running a script.
         logError(error.message);
         // Notify the user via popup.
+        if (Preferences.polymod_errs)
+        {
         showAlert('Polymod Script Exception', error.message);
+        }
       case SCRIPT_CLASS_MODULE_NOT_FOUND:
         // A scripted class tried to reference an unknown class or module.
         logError(error.message);
