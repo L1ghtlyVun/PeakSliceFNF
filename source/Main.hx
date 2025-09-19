@@ -30,7 +30,6 @@ class Main extends Sprite
   var initialState:Class<FlxState> = funkin.InitState; // The FlxState the game starts with.
   var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
   var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
-<<<<<<< HEAD
 
   /**
    * Static asset cache for loaded resources (atlases, textures, sounds, etc).

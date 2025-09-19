@@ -110,7 +110,7 @@ class Project extends HXProject
 
   static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
 
-<<<<<<< HEAD
+
   //
   // ASTC COMPRESSION
   //
@@ -123,8 +123,6 @@ class Project extends HXProject
    */
   static var ASTC_QUALITY:String = "thorough";
 
-=======
->>>>>>> upstream/main
   /**
    * The team ID to use for the iOS app. Configured in XCode.
    */
