@@ -654,6 +654,17 @@ class PlayState extends MusicBeatSubState
    */
   static final MUSIC_EASE_RATIO:Float = 42;
 
+  /**
+   * The threshold for how much the conductor lerp can drift from the music.
+   * If the conductor song position deviate from the music by more than this amount, then a normal conductor update is triggered.
+   */
+  static final CONDUCTOR_DRIFT_THRESHOLD:Float = 65;
+
+  /**
+   * The ratio for easing the song positon for smoother notes scrolling.
+   */
+  static final MUSIC_EASE_RATIO:Float = 42;
+
   // TODO: Refactor or document
   var generatedMusic:Bool = false;
 
@@ -2140,6 +2151,7 @@ class PlayState extends MusicBeatSubState
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     playerStrumline.y = (FlxG.height - playerStrumline.height) * 0.95 - Constants.STRUMLINE_Y_OFFSET;
     if (currentChart?.noteStyle != "pixel")
+<<<<<<< HEAD
     {
       #if android playerStrumline.y += 10; #end
     }
@@ -2198,15 +2210,35 @@ class PlayState extends MusicBeatSubState
 
     playerStrumline.x = (FlxG.width - playerStrumline.width) / 2 + Constants.STRUMLINE_X_OFFSET;
     if (currentChart.noteStyle != "pixel")
-    {
-      #if android playerStrumline.y += 10; #end
-    }
-    else
-    {
-      playerStrumline.y -= 10;
-    }
-    opponentStrumline.y = Constants.STRUMLINE_Y_OFFSET * 0.3;
-    opponentStrumline.x -= 30;
+  }
+
+  function initPauseSprites()
+  {
+    pauseButton.animation.addByIndices('idle', 'back', [0], "", 24, false);
+    pauseButton.animation.addByIndices('hold', 'back', [5], "", 24, false);
+    pauseButton.animation.addByIndices('confirm', 'back', [
+      6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32
+    ], "", 24, false);
+    pauseButton.scale.set(0.8, 0.8);
+    pauseButton.updateHitbox();
+    pauseButton.animation.play("idle");
+    pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
+    @:nullSafety(Off) // AAAAAAA why did camControls have to be nullable AAAAAAAAAA
+    pauseButton.cameras = [camControls];
+
+    pauseCircle.scale.set(0.84, 0.8);
+    pauseCircle.updateHitbox();
+    @:nullSafety(Off)
+    pauseCircle.cameras = [camControls];
+    pauseCircle.x = ((pauseButton.x + (pauseButton.width / 2)) - (pauseCircle.width / 2));
+    pauseCircle.y = ((pauseButton.y + (pauseButton.height / 2)) - (pauseCircle.height / 2));
+    pauseCircle.alpha = 0.1;
+
+    add(pauseCircle);
+    add(pauseButton);
+    hitbox?.forEachAlive(function(hint:FunkinHint) {
+      hint.deadZones.push(pauseButton);
+    });
   }
   #end
 

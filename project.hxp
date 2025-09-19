@@ -110,6 +110,7 @@ class Project extends HXProject
 
   static final ANDROID_EXTENSIONS:Array<String> = ["funkin.extensions.CallbackUtil"];
 
+<<<<<<< HEAD
   //
   // ASTC COMPRESSION
   //
@@ -122,6 +123,8 @@ class Project extends HXProject
    */
   static var ASTC_QUALITY:String = "thorough";
 
+=======
+>>>>>>> upstream/main
   /**
    * The team ID to use for the iOS app. Configured in XCode.
    */
@@ -871,7 +874,6 @@ class Project extends HXProject
     // Since mobile is pretty memory safe (I'm looking at you Apple...) we need them BADLY to have the game run properly.
     // It's kept off for desktop due to the low ASTC support on desktop GPUs (which seem to be only among Intergrated Graphics).
     FEATURE_COMPRESSED_TEXTURES.apply(this, true);
-
     renderFlagsTable();
   }
 
