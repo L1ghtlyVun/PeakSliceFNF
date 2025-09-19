@@ -271,6 +271,12 @@ class CharSelectSubState extends MusicBeatSubState
     nametag.midpointX += cutoutSize;
     add(nametag);
 
+    @:privateAccess
+    {
+      nametag.midpointY += 200;
+      FlxTween.tween(nametag, {midpointY: nametag.midpointY - 200}, 1, {ease: FlxEase.expoOut});
+    }
+
     nametag.scrollFactor.set();
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSprite, ["x", "y", "alpha", "scale", "blend"]));
@@ -739,6 +745,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxTween.tween(cursorConfirmed, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
 
     FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
+    FlxTween.tween(nametag, {y: nametag.y + 80}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBacking, {y: dipshitBacking.y + 210}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(chooseDipshit, {y: chooseDipshit.y + 200}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(dipshitBlur, {y: dipshitBlur.y + 220}, 0.8, {ease: FlxEase.backIn});
@@ -748,6 +755,11 @@ class CharSelectSubState extends MusicBeatSubState
       FlxTween.tween(member, {y: member.y + 300}, 0.8, {ease: FlxEase.backIn});
     }
     FlxG.camera.follow(camFollow, LOCKON);
+    // going to freeplay so fast makes the fade effects and the camera to bug, that's why we cancel the tweens
+    FlxTween.cancelTweensOf(transitionGradient);
+    FlxTween.cancelTweensOf(fadeShader);
+    FlxTween.cancelTweensOf(camFollow);
+
     FlxTween.tween(transitionGradient, {y: -150}, 0.8, {ease: FlxEase.backIn});
     fadeShader.fade(1.0, 0, 0.8, {ease: FlxEase.quadIn});
     FlxTween.tween(camFollow, {y: camFollow.y - 150}, 0.8,
@@ -757,7 +769,7 @@ class CharSelectSubState extends MusicBeatSubState
           FlxG.switchState(() -> FreeplayState.build(
             {
               {
-                character: curChar,
+                character: wentBackToFreeplay ? rememberedChar : curChar,
                 fromCharSelect: true
               }
             }));
@@ -776,6 +788,8 @@ class CharSelectSubState extends MusicBeatSubState
 
   var mobileDeny:Bool = false;
   var mobileAccept:Bool = false;
+
+  var wentBackToFreeplay:Bool = false;
 
   override public function update(elapsed:Float):Void
   {
@@ -891,6 +905,14 @@ class CharSelectSubState extends MusicBeatSubState
         cursorDenied.visible = false;
         holdTmrRight = 0;
         selectSound.play(true);
+      }
+
+      if (controls.BACK)
+      {
+        wentBackToFreeplay = true;
+        FunkinSound.playOnce(Paths.sound('cancelMenu'));
+        FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 0.7, {ease: FlxEase.quadInOut});
+        goToFreeplay();
       }
     }
 

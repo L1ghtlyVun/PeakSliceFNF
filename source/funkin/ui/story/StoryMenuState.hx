@@ -25,7 +25,6 @@ import funkin.ui.transition.stickers.StickerSubState;
 import funkin.util.MathUtil;
 import funkin.util.SwipeUtil;
 import funkin.util.TouchUtil;
-import openfl.utils.Assets;
 import funkin.ui.FullScreenScaleMode;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
@@ -330,6 +329,11 @@ class StoryMenuState extends MusicBeatState
 
     handleKeyPresses();
 
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
     super.update(elapsed);
   }
 
@@ -348,6 +352,18 @@ class StoryMenuState extends MusicBeatState
         if (controls.UI_DOWN_P || SwipeUtil.swipeDown)
         {
           changeLevel(1);
+          changeDifficulty(0);
+        }
+
+        if (controls.FREEPLAY_JUMP_TO_TOP)
+        {
+          changeLevel(levelList.length);
+          changeDifficulty(0);
+        }
+
+        if (controls.FREEPLAY_JUMP_TO_BOTTOM)
+        {
+          changeLevel(-levelList.length);
           changeDifficulty(0);
         }
 
@@ -590,7 +606,7 @@ class StoryMenuState extends MusicBeatState
 
     var targetSongId:String = PlayStatePlaylist.playlistSongIds.shift();
 
-    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId);
+    var targetSong:Song = SongRegistry.instance.fetchEntry(targetSongId, {variation: Constants.DEFAULT_VARIATION});
 
     PlayStatePlaylist.campaignId = currentLevel.id;
     PlayStatePlaylist.campaignTitle = currentLevel.getTitle();
@@ -604,12 +620,14 @@ class StoryMenuState extends MusicBeatState
 
       var targetVariation:String = targetSong.getFirstValidVariation(PlayStatePlaylist.campaignDifficulty);
 
-      LoadingState.loadPlayState(
-        {
-          targetSong: targetSong,
-          targetDifficulty: PlayStatePlaylist.campaignDifficulty,
-          targetVariation: targetVariation
-        }, true);
+      FlxG.camera.fade(FlxColor.BLACK, 0.2, false, function() {
+        LoadingState.loadPlayState(
+          {
+            targetSong: targetSong,
+            targetDifficulty: PlayStatePlaylist.campaignDifficulty,
+            targetVariation: targetVariation
+          }, true);
+      });
     });
   }
 
@@ -707,6 +725,7 @@ class StoryMenuState extends MusicBeatState
     if (exitingMenu || selectedLevel) return;
 
     exitingMenu = true;
+    FlxG.keys.enabled = false;
     FlxG.switchState(() -> new MainMenuState());
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
   }

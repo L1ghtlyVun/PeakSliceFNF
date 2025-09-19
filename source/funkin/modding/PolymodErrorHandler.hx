@@ -5,19 +5,6 @@ import polymod.Polymod;
 @:nullSafety
 class PolymodErrorHandler
 {
-  /**
-   * Show a popup with the given text.
-   * This displays a system popup, it WILL interrupt the game.
-   * Make sure to only use this when it's important, like when there's a script error.
-   *
-   * @param name The name at the top of the popup.
-   * @param desc The body text of the popup.
-   */
-  public static function showAlert(name:String, desc:String):Void
-  {
-    lime.app.Application.current.window.alert(desc, name);
-  }
-
   public static function onPolymodError(error:PolymodError):Void
   {
     // Perform an action based on the error code.
@@ -60,13 +47,12 @@ class PolymodErrorHandler
         msg += '\nCheck to ensure the class exists and is spelled correctly.';
 
         // Notify the user via popup.
-        showAlert('Polymod Script Import Error', msg);
+        funkin.util.WindowUtil.showError('Polymod Script Import Error', msg);
       case SCRIPT_CLASS_MODULE_BLACKLISTED:
         // A scripted class tried to reference a blacklisted class or module.
         logError(error.message);
         // Notify the user via popup.
-        showAlert('Polymod Script Blacklist Violation', error.message);
-
+        funkin.util.WindowUtil.showError('Polymod Script Blacklist Violation', error.message);
       default:
         // Log the message based on its severity.
         switch (error.severity)

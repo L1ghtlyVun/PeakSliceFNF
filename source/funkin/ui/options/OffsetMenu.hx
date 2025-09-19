@@ -394,7 +394,8 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       if (Preferences.controlsScheme != FunkinHitboxControlSchemes.Arrows || ControlsHandler.usingExternalInputDevice)
       {
       #end
-        testStrumline.y = Preferences.downscroll ? FlxG.height - (testStrumline.height + 45) - Constants.STRUMLINE_Y_OFFSET : (testStrumline.height / 2)
+        var height = testStrumline.strumlineNotes.members[0].height;
+        testStrumline.y = Preferences.downscroll ? FlxG.height - (height + 45) - Constants.STRUMLINE_Y_OFFSET : (height / 2)
         - Constants.STRUMLINE_Y_OFFSET;
         if (Preferences.downscroll) jumpInText.y = testStrumline.y - 175;
         testStrumline.isDownscroll = Preferences.downscroll;
@@ -541,6 +542,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     if (FlxG.sound.music.time < _lastTime)
     {
       localConductor.update(FlxG.sound.music.time, !calibrating);
+      b = localConductor.currentBeatTime;
 
       // Update arrows to be the correct distance away from the receptor.
       var lastArrowBeat:Float = 0;
@@ -554,7 +556,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       }
       if (calibrating)
       {
-        arrowBeat = lastArrowBeat + 2;
+        arrowBeat = lastArrowBeat;
       }
       else
         arrowBeat = 4;
@@ -562,6 +564,10 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       testStrumline.clean();
       testStrumline.noteData = [];
       testStrumline.nextNoteIndex = 0;
+      trace('Restarting conductor');
+
+      _lastTime = FlxG.sound.music.time;
+      return;
     }
 
     _lastBeat = b;
@@ -604,7 +610,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
       countText.text = 'Current Offset: ' + Std.int(appliedOffsetLerp) + 'ms';
 
       var toRemove:Array<ArrowData> = [];
-
+      var _lastArrowBeat:Float = 0;
       // Update arrows
       for (i in 0...arrows.length)
       {
@@ -625,12 +631,13 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
           arrow.sprite.alpha -= elapsed * 5;
         }
 
-        if (arrow.sprite.alpha <= 0)
+        if (arrow.beat == _lastArrowBeat || arrow.sprite.alpha <= 0)
         {
           toRemove.push(arrow);
           arrow.sprite.kill();
-          // arrow.debugText.kill();
+          continue;
         }
+        _lastArrowBeat = arrow.beat;
       }
 
       // Remove arrows that are marked for removal.
@@ -726,6 +733,7 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
         var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, _lastDirection, 0, null, null);
         testStrumline.addNoteData(data, false);
 
+        // Create a jump (double note) every 8 beats to visually indicate first beat - requested by Hundrec
         if (Math.floor(arrowBeat % 8) == 0)
         {
           var data:SongNoteData = new SongNoteData(arrowBeat * msPerBeat, 2, 0, null, null);
@@ -964,5 +972,12 @@ class OffsetMenu extends Page<OptionsState.OptionsMenuPageName>
     items.addItem(prefName, item);
     preferenceItems.add(item.lefthandText);
     return item;
+  }
+
+  override public function destroy()
+  {
+    MenuTypedList.pauseInput = false;
+    exitCalibration(true);
+    super.destroy();
   }
 }

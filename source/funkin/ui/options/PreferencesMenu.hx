@@ -16,6 +16,7 @@ import funkin.ui.TextMenuList.TextMenuItem;
 import funkin.ui.options.items.CheckboxPreferenceItem;
 import funkin.ui.options.items.NumberPreferenceItem;
 import funkin.ui.options.items.EnumPreferenceItem;
+import funkin.ui.debug.FunkinDebugDisplay.DebugDisplayMode;
 #if mobile
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.mobile.input.ControlsHandler;
@@ -65,7 +66,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     createPrefDescription();
 
     camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
-    if (items != null) camFollow.y = items.selectedItem.y;
 
     menuCamera.follow(camFollow, null, 0.085);
     var margin = 160;
@@ -73,7 +73,6 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.minScrollY = 0;
 
     items.onChange.add(function(selected) {
-      camFollow.y = selected.y;
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
@@ -176,9 +175,21 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
       Preferences.polymod_errs = value;
     }, Preferences.polymod_errs);
     #if !mobile
-    createPrefItemCheckbox('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', function(value:Bool):Void {
+    createPrefItemEnum('Debug Display', 'If enabled, FPS and other debug stats will be displayed.', [
+      "Advanced" => DebugDisplayMode.ADVANCED,
+      "Simple" => DebugDisplayMode.SIMPLE,
+      "Off" => DebugDisplayMode.OFF
+    ], function(key:String, value:DebugDisplayMode):Void {
       Preferences.debugDisplay = value;
-    }, Preferences.debugDisplay);
+    }, switch (Preferences.debugDisplay)
+      {
+        case DebugDisplayMode.SIMPLE: "Simple";
+        case DebugDisplayMode.ADVANCED: "Advanced";
+        default: "Off";
+      });
+    createPrefItemPercentage('Debug Display BG', "Change debug display's background opacity", function(value:Int):Void {
+      Preferences.debugDisplayBGOpacity = value;
+    }, Preferences.debugDisplayBGOpacity);
     createPrefItemCheckbox('Pause on Unfocus', 'If enabled, game automatically pauses when it loses focus.', function(value:Bool):Void {
       Preferences.autoPause = value;
     }, Preferences.autoPause);
@@ -232,6 +243,9 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
   override function update(elapsed:Float):Void
   {
     super.update(elapsed);
+
+    // Positions the camera to the selected item.
+    if (items != null) camFollow.y = items.selectedItem.y;
 
     // Indent the selected item.
     items.forEach(function(daItem:TextMenuItem) {
